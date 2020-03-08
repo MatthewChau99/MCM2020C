@@ -5,5 +5,4 @@ import Data_Manipulation as dm
 if __name__ == '__main__':
     dp.data_preprocess()
     nlp.nlp()
-    dm.generate_statistics()
-    dm.generate_normalized_data()
+    dm.data_manipulate()
