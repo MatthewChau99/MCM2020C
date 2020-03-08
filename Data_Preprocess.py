@@ -7,6 +7,7 @@ hair_dryer_df = pd.read_csv('hair_dryer.tsv', sep='\t')
 microwave_df = pd.read_csv('microwave.tsv', sep='\t')
 pacifier_df = pd.read_csv('pacifier.tsv', sep='\t')
 df_all = [hair_dryer_df, microwave_df, pacifier_df]
+bank = ['love', 'good', 'awesome']
 
 #
 #  Data Preprocessing
@@ -15,7 +16,7 @@ df_all = [hair_dryer_df, microwave_df, pacifier_df]
 for df in df_all:
     # Sort by date
     df['review_date'] = pd.to_datetime(df['review_date'])
-    df.sort_values(by=['review_date', 'review_id'], ascending=True, inplace=True)
+    df.sort_values(by=['review_date', 'review_id'], ascending=False, inplace=True, ignore_index=True)
 
     # Removing unnecessary columns
     df.drop(columns=['marketplace', 'product_parent', 'product_category'], inplace=True)
@@ -42,14 +43,17 @@ for df in df_all:
         df.at[i, 'review_headline'] = cleaned_title
 
     # Adding empty columns
+    df.insert(loc=len(df.columns), column='page_number', value=0)   # Adding page number column
+    df.insert(loc=len(df.columns), column='keyword_count', value=0)  # Adding keyword count column
     df.insert(loc=len(df.columns), column='keywords', value="")  # Adding keywords column
     df.insert(loc=len(df.columns), column='word_count', value=0)  # Adding wordcount column
+    df.insert(loc=len(df.columns), column='review_type', value=0)  # Adding review type column
     df.insert(loc=2, column='review_weight', value=0)  # Adding review weight (for each review for the same prod)
     df.insert(loc=4, column='review_count', value=0)  # Adding review count for each product
     df.insert(loc=5, column='product_weight', value=0)  # Adding product weight column
     df.insert(loc=8, column='rating_weight', value=0)  # Adding rating weight column
-    df.insert(loc=11, column='vote_ratio', value=0)  # Adding vote ratio column
-    df.insert(loc=18, column='keyword_count', value=0)  # Adding keyword count column
+    df.insert(loc=11, column='vote_ratio', value=0.0)  # Adding vote ratio column
+    df.insert(loc=12, column='normalized_vote_ratio', value=0.0)    # Adding normalized vote ratio column
 
 
 #
@@ -67,6 +71,9 @@ def generate_attribute(word_bank, dataframe):
         if '' in review_words:
             review_words.remove('')
 
+        # Generating page number
+        dataframe.at[index, 'page_number'] = np.ceil((index + 1) / 10)
+
         # Generate keywords
         contain_keyword = set(review_words).intersection(word_bank)
         if contain_keyword:
@@ -75,6 +82,15 @@ def generate_attribute(word_bank, dataframe):
 
         # Generate review length
         dataframe.at[index, 'word_count'] = len(review_words)
+
+        # Generate review types according to its length
+        review_length = dataframe.loc[index, 'word_count']
+        if 0 <= review_length < 20:
+            dataframe.at[index, 'review_type'] = 0      # Sentence
+        elif 20 <= review_length < 80:
+            dataframe.at[index, 'review_type'] = 1      # Paragraph
+        elif review_length >= 80:
+            dataframe.at[index, 'review_type'] = 2      # Long Review
 
         # Generate vote ratio
         dataframe.at[index, 'vote_ratio'] = dataframe.loc[index, 'total_votes'] * 1000 / total_votes
@@ -87,14 +103,17 @@ def generate_attribute(word_bank, dataframe):
             review_count.update({product_id: review_count.get(product_id) + 1})
 
     for index in range(len(dataframe.index)):
+        # Generate review count for each product
         dataframe.at[index, 'review_count'] = review_count.get(dataframe.loc[index, 'product_id'])
 
-    print(len(set(dataframe.loc[:, 'product_id'])))
-    print(len(dataframe))
+        # Generate normalized vote ratio
+        max_vote_ratio = np.max(dataframe['vote_ratio'])
+        min_vote_ratio = np.min(dataframe['vote_ratio'])
+        votes_ratio = dataframe.loc[index, 'vote_ratio']
+        normalized_vote_ratio = (votes_ratio - min_vote_ratio) / (max_vote_ratio - min_vote_ratio)
+        dataframe.at[index, 'normalized_vote_ratio'] = normalized_vote_ratio
 
 
-bank = ['love', 'good', 'awesome']
-# Insert word count column
 for df in df_all:
     generate_attribute(bank, df)
 
