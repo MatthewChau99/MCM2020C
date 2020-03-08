@@ -1,3 +1,5 @@
+import pprint
+
 import numpy as np
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -27,11 +29,11 @@ def generate_score(dataframe):
 
 
 def generate_statistics(dataframe):
-    attributes = ['pos', 'neu', 'neg', 'compound']
+    attributes = ['star_rating', 'sentiment_pos', 'sentiment_neu', 'sentiment_neg', 'sentiment_compound']
     stats = {}
     for attribute in attributes:
-        mean = np.average(df['sentiment_%s' % attribute])
-        sd = np.average(df['sentiment_%s' % attribute])
+        mean = np.average(df[attribute])
+        sd = np.average(df[attribute])
         stats.update({('%s_mean' % attribute): mean, ('%s_sd' % attribute): sd})
     if dataframe is hair_dryer_df:
         statistics.update({'hair': stats})
@@ -49,3 +51,6 @@ for df in df_all:
 hair_dryer_df.to_csv(open('Processed/hair_dryer_processed.csv', 'w'), index=False)
 microwave_df.to_csv(open('Processed/microwave_processed.csv', 'w'), index=False)
 pacifier_df.to_csv(open('Processed/pacifier_processed.csv', 'w'), index=False)
+
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(statistics)

@@ -16,12 +16,12 @@ detachAllPackages <- function() {
 detachAllPackages()
 
 # Lu wd
-setwd('~/Documents/GitHub/MCM2020E/sorted/')
+setwd('/Users/admin/Desktop/EMORY/Academics/Spring_2020/2020_Weekend2_Problems/MCM2020E/Sorted')
 
 # load libraries
 pkgTest <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
-  if (length(new.pkg)) 
+  if (length(new.pkg))
     install.packages(new.pkg, dependencies = TRUE)
   sapply(pkg, require, character.only = TRUE)
 }
@@ -55,12 +55,12 @@ clean_text <- function(inputVec){
     # remove single letter words
     return(x[nchar(x) > 1])
   }
-  
+
   # remove stop words
   tempVec <- remove_words(tempVec, stopwords("english"))
-  
+
   # get count of each word in "document"
-  count_df <- data.frame(document=row, 
+  count_df <- data.frame(document=row,
                          count=rle(sort(tempVec))[[1]],
                          word=rle(sort(tempVec))[[2]])
   return(count_df)
