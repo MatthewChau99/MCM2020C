@@ -7,7 +7,10 @@ hair_dryer_df = pd.read_csv('hair_dryer.tsv', sep='\t')
 microwave_df = pd.read_csv('microwave.tsv', sep='\t')
 pacifier_df = pd.read_csv('pacifier.tsv', sep='\t')
 df_all = [hair_dryer_df, microwave_df, pacifier_df]
-bank = ['love', 'good', 'awesome']
+
+hairdryer_wordbank = open('hairdryer_wordbank.txt', 'r', encoding='utf-8').read().split('\n')
+microwave_wordbank = open('microwave_wordbank.txt', 'r', encoding='utf-8').read().split('\n')
+pacifier_wordbank = open('pacifier_wordbank.txt', 'r', encoding='utf-8').read().split('\n')
 
 #
 #  Data Preprocessing
@@ -43,9 +46,10 @@ for df in df_all:
         df.at[i, 'review_headline'] = cleaned_title
 
     # Adding empty columns
-    df.insert(loc=len(df.columns), column='page_number', value=0)   # Adding page number column
-    df.insert(loc=len(df.columns), column='keyword_count', value=0)  # Adding keyword count column
+    df.insert(loc=len(df.columns), column='page_number', value=0)  # Adding page number column
     df.insert(loc=len(df.columns), column='keywords', value="")  # Adding keywords column
+    df.insert(loc=len(df.columns), column='keyword_count', value=0)  # Adding keyword count column
+    df.insert(loc=len(df.columns), column='normalized_keyword_count', value=0.0)  # Adding normalized keyword count
     df.insert(loc=len(df.columns), column='word_count', value=0)  # Adding wordcount column
     df.insert(loc=len(df.columns), column='review_type', value=0)  # Adding review type column
     df.insert(loc=2, column='review_weight', value=0)  # Adding review weight (for each review for the same prod)
@@ -53,7 +57,7 @@ for df in df_all:
     df.insert(loc=5, column='product_weight', value=0)  # Adding product weight column
     df.insert(loc=8, column='rating_weight', value=0)  # Adding rating weight column
     df.insert(loc=11, column='vote_ratio', value=0.0)  # Adding vote ratio column
-    df.insert(loc=12, column='normalized_vote_ratio', value=0.0)    # Adding normalized vote ratio column
+    df.insert(loc=12, column='normalized_vote_ratio', value=0.0)  # Adding normalized vote ratio column
 
 
 #
@@ -75,7 +79,11 @@ def generate_attribute(word_bank, dataframe):
         dataframe.at[index, 'page_number'] = np.ceil((index + 1) / 10)
 
         # Generate keywords
-        contain_keyword = set(review_words).intersection(word_bank)
+        contain_keyword = set()
+        for word1 in review_words:
+            for word2 in word_bank:
+                if word2 in word1:
+                    contain_keyword.add(word2)
         if contain_keyword:
             dataframe.at[index, 'keywords'] = set(contain_keyword)
             dataframe.at[index, 'keyword_count'] = len(contain_keyword)
@@ -86,11 +94,11 @@ def generate_attribute(word_bank, dataframe):
         # Generate review types according to its length
         review_length = dataframe.loc[index, 'word_count']
         if 0 <= review_length < 20:
-            dataframe.at[index, 'review_type'] = 0      # Sentence
+            dataframe.at[index, 'review_type'] = 0  # Sentence
         elif 20 <= review_length < 80:
-            dataframe.at[index, 'review_type'] = 1      # Paragraph
+            dataframe.at[index, 'review_type'] = 1  # Paragraph
         elif review_length >= 80:
-            dataframe.at[index, 'review_type'] = 2      # Long Review
+            dataframe.at[index, 'review_type'] = 2  # Long Review
 
         # Generate vote ratio
         dataframe.at[index, 'vote_ratio'] = dataframe.loc[index, 'total_votes'] * 1000 / total_votes
@@ -103,8 +111,12 @@ def generate_attribute(word_bank, dataframe):
             review_count.update({product_id: review_count.get(product_id) + 1})
 
     for index in range(len(dataframe.index)):
-        # Generate review count for each product
-        dataframe.at[index, 'review_count'] = review_count.get(dataframe.loc[index, 'product_id'])
+        # Generate normalized keyword count
+        max_keyword_count = np.max(dataframe['keyword_count'])
+        min_keyword_count = np.min(dataframe['keyword_count'])
+        keyword_count = dataframe.loc[index, 'keyword_count']
+        normalized_keyword_count = (keyword_count - min_keyword_count) / (max_keyword_count - min_keyword_count)
+        dataframe.at[index, 'normalized_keyword_count'] = normalized_keyword_count
 
         # Generate normalized vote ratio
         max_vote_ratio = np.max(dataframe['vote_ratio'])
@@ -113,9 +125,13 @@ def generate_attribute(word_bank, dataframe):
         normalized_vote_ratio = (votes_ratio - min_vote_ratio) / (max_vote_ratio - min_vote_ratio)
         dataframe.at[index, 'normalized_vote_ratio'] = normalized_vote_ratio
 
+        # Generate review count for each product
+        dataframe.at[index, 'review_count'] = review_count.get(dataframe.loc[index, 'product_id'])
 
-for df in df_all:
-    generate_attribute(bank, df)
+
+generate_attribute(hairdryer_wordbank, hair_dryer_df)
+generate_attribute(microwave_wordbank, microwave_df)
+generate_attribute(pacifier_wordbank, pacifier_df)
 
 # Output csv
 hair_dryer_df.to_csv(open('Sorted/hair_dryer_sorted.tsv', 'w'), index=False)

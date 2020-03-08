@@ -1,5 +1,4 @@
 import pprint
-
 import numpy as np
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -33,7 +32,7 @@ def generate_statistics(dataframe):
     stats = {}
     for attribute in attributes:
         mean = np.average(df[attribute])
-        sd = np.average(df[attribute])
+        sd = np.std(df[attribute])
         stats.update({('%s_mean' % attribute): mean, ('%s_sd' % attribute): sd})
     if dataframe is hair_dryer_df:
         statistics.update({'hair': stats})
