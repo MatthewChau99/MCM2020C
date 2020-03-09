@@ -82,5 +82,63 @@ sd(hair_dryer$avg_rating)
 sd(microwave$avg_rating)
 sd(pacifier$avg_rating)
 
+setwd('~/Documents/GitHub/MCM2020E/')
+df <- read.csv("final_score.csv", encoding="UTF-8", stringsAsFactors=FALSE)
+df <- df %>%
+  mutate(total_score = 0.469*avg_rating + 0.531*evaluation_score)
 
+hair_dryer <- df %>%
+  filter(product_type=="hair_dryer")
+pacifier <- df %>%
+  filter(product_type=="pacifier")
+microwave <- df %>%
+  filter(product_type=="microwave")
 
+mean(hair_dryer$total_score)
+mean(microwave$total_score)
+mean(pacifier$total_score)
+
+sd(hair_dryer$total_score)
+sd(microwave$total_score)
+sd(pacifier$total_score)
+
+#################################
+# something totally different
+# i'm so tired and i dont know
+# what i am exactly doing
+#################################
+# 0208
+df <- read.csv("~/Documents/GitHub/MCM2020E/Sensitivity/0208.csv")
+
+hair_dryer <- df %>%
+  filter(product_type=="hair_dryer")
+pacifier <- df %>%
+  filter(product_type=="pacifier")
+microwave <- df %>%
+  filter(product_type=="microwave")
+
+mean(hair_dryer$total_score)
+mean(microwave$total_score)
+mean(pacifier$total_score)
+
+sd(hair_dryer$total_score)
+sd(microwave$total_score)
+sd(pacifier$total_score)
+
+# 0802
+df <- read.csv("~/Documents/GitHub/MCM2020E/Sensitivity/0802.csv")
+
+hair_dryer <- df %>%
+  filter(product_type=="hair_dryer")
+pacifier <- df %>%
+  filter(product_type=="pacifier")
+microwave <- df %>%
+  filter(product_type=="microwave")
+
+mean(hair_dryer$total_score)
+mean(microwave$total_score)
+mean(pacifier$total_score)
+
+sd(hair_dryer$total_score)
+sd(microwave$total_score)
+sd(pacifier$total_score)
