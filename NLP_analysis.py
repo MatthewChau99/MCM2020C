@@ -9,7 +9,6 @@ def nlp():
     microwave_df = pd.read_csv('Processed/microwave_preprocessed.tsv', sep=',')
     pacifier_df = pd.read_csv('Processed/pacifier_preprocessed.tsv', sep=',')
     df_all = [hair_dryer_df, microwave_df, pacifier_df]
-    statistics = {}
 
     def generate_score(dataframe):
         for index in range(len(dataframe.index)):

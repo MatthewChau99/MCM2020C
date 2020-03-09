@@ -60,8 +60,8 @@ def data_preprocess():
         df.insert(loc=len(df.columns), column='evaluation_score', value=0.0)  # Adding final evaluation score
         df.insert(loc=2, column='review_weight', value=0)  # Adding review weight (for each review for the same prod)
         df.insert(loc=4, column='review_count', value=0)  # Adding review count for each product
-        df.insert(loc=5, column='product_weight', value=0)  # Adding product weight column
-        df.insert(loc=8, column='rating_weight', value=0)  # Adding rating weight column
+        df.insert(loc=5, column='product_count', value=0)  # Adding product count column
+        df.insert(loc=8, column='product_average_rating', value=0.0)  # Adding product average rating column
         df.insert(loc=11, column='product_vote_count', value=0)  # Adding vote count product
         df.insert(loc=12, column='normalized_product_vote_count', value=0.0)  # Adding normalized vote ratio product
         df.insert(loc=13, column='vote_ratio_helpful_product_total',
@@ -69,7 +69,8 @@ def data_preprocess():
         df.insert(loc=14, column='normalized_vote_ratio_helpful_product_total',
                   value=0.0)  # Review helpful vote / Product total vote
         df.insert(loc=15, column='vote_ratio_total_product_total', value=0.0)  # Adding vote ratio all
-        df.insert(loc=16, column='normalized_vote_ratio_total_product_total', value=0.0)  # Adding normalized vote ratio all
+        df.insert(loc=16, column='normalized_vote_ratio_total_product_total',
+                  value=0.0)  # Adding normalized vote ratio all
         df.insert(loc=17, column='normalized_vine', value=0.0)  # Adding normalized vote ratio all
         df.insert(loc=19, column='normalized_verified_purchase', value=0.0)  # Adding normalized vote ratio all
 
@@ -81,6 +82,7 @@ def data_preprocess():
         total_votes = np.sum(dataframe['total_votes'])
         review_count = {}
         product_vote_count = {}
+        product_avg_rate = {}
 
         for index in range(len(dataframe.index)):
             product_id = dataframe.loc[index, 'product_id']
@@ -105,6 +107,12 @@ def data_preprocess():
             # Generate review length
             dataframe.at[index, 'word_count'] = len(review_words)
 
+            # Generate review count for each product
+            if product_id not in review_count:
+                review_count.update({product_id: 1})
+            else:
+                review_count.update({product_id: review_count.get(product_id) + 1})
+
             # Generate review types according to its length
             review_length = dataframe.loc[index, 'word_count']
             if 0 <= review_length < 20:
@@ -114,6 +122,13 @@ def data_preprocess():
             elif review_length >= 80:
                 dataframe.at[index, 'review_type'] = 2  # Long Review
 
+            # Generate product average rating
+            product_rating = dataframe.loc[index, 'star_rating']
+            if product_id not in product_vote_count:
+                product_avg_rate.update({product_id: product_rating})
+            else:
+                product_avg_rate.update({product_id: product_avg_rate.get(product_id) + product_rating})
+
             # Generate vote count product
             review_total_votes = dataframe.loc[index, 'total_votes']
             if product_id not in product_vote_count:
@@ -122,17 +137,14 @@ def data_preprocess():
                 product_vote_count.update({product_id: product_vote_count.get(product_id) + review_total_votes})
 
             # Generate vote ratio all
-            dataframe.at[index, 'vote_ratio_total_product_total'] = dataframe.loc[index, 'total_votes'] * 1000 / total_votes
-
-            # Generate review count for each product
-            if product_id not in review_count:
-                review_count.update({product_id: 1})
-            else:
-                review_count.update({product_id: review_count.get(product_id) + 1})
+            dataframe.at[index, 'vote_ratio_total_product_total'] = dataframe.loc[
+                                                                        index, 'total_votes'] * 1000 / total_votes
 
         for index in range(len(dataframe.index)):
+            product_id = dataframe.loc[index, 'product_id']
+
             # Generate vote count for each product
-            dataframe.at[index, 'product_vote_count'] = product_vote_count.get(dataframe.loc[index, 'product_id'])
+            dataframe.at[index, 'product_vote_count'] = product_vote_count.get(product_id)
 
             # Generate vote ratios
             if dataframe.at[index, 'product_vote_count'] == 0:
@@ -140,14 +152,23 @@ def data_preprocess():
             else:
                 # review total vs product total
                 dataframe.at[index, 'vote_ratio_total_product_total'] = dataframe.at[index, 'total_votes'] / \
-                                                                      dataframe.at[index, 'product_vote_count']
+                                                                        dataframe.at[index, 'product_vote_count']
 
                 # review helpful vote vs product total
-                dataframe.at[index, 'vote_ratio_helpful_product_total'] = dataframe.at[index, 'helpful_votes'] / \
+
+                dataframe.at[index, 'vote_ratio_helpful_product_total'] = (2 * dataframe.loc[index, 'helpful_votes'] -
+                                                                           dataframe.loc[index, 'total_votes']) / \
                                                                           dataframe.at[index, 'product_vote_count']
 
             # Generate review count for each product
-            dataframe.at[index, 'review_count'] = review_count.get(dataframe.loc[index, 'product_id'])
+            dataframe.at[index, 'review_count'] = review_count.get(product_id)
+
+            # Generate product average rating
+            if dataframe.loc[index, 'review_count'] == 0:
+                dataframe.at[index, 'product_average_rating'] = 0
+            else:
+                dataframe.at[index, 'product_average_rating'] = product_avg_rate.get(product_id) / dataframe.loc[
+                    index, 'review_count']
 
     generate_attribute(hairdryer_wordbank, hair_dryer_df)
     generate_attribute(microwave_wordbank, microwave_df)
