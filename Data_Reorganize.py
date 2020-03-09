@@ -40,8 +40,7 @@ def data_reorganize():
 
     def reorganized_month():
         products_abrev = ['h', 'm', 'p']
-        years = ['2012', '2013', '2014', '2015']
-        months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+        year, month = '2015', '08'
 
         def get_product_data(df_name, df):
             data_mapping = {}
@@ -78,49 +77,46 @@ def data_reorganize():
             return data_mapping
 
         for product in products_abrev:
-            for year in years:
-                for month in months:
-                    if year == '2015' and months.index(month) >= 8 or year == '2012' and month == '01':
-                        continue
+            input_df = pd.read_csv('Time/Input/%s%s%s.csv' % (product, year, month), sep=',')
+            input_df['review_date'] = pd.to_datetime(input_df['review_date'])
 
-                    input_df = pd.read_csv('Time/Input/%s%s%s.csv' % (product, year, month), sep=',')
-                    input_df['review_date'] = pd.to_datetime(input_df['review_date'])
-                    output_df = pd.DataFrame(input_df['product_id'], columns=['product_id'])
-                    output_df['product_type'] = product
+            output_df = pd.DataFrame(input_df['product_id'], columns=['product_id'])
+            output_df.drop_duplicates(inplace=True)
+            output_df.set_index('product_id')
+            output_df['product_type'] = product
 
-                    initial_date = input_df['review_date'][0]
-                    initial_year, initial_month = input_df['review_date'][0].year, input_df['review_date'][
-                        0].month
+            current_date = input_df['review_date'][0]
+            current_year, current_month = input_df['review_date'][0].year, input_df['review_date'][0].month
+            input_filtered_df = input_df.loc[input_df['review_date'] <= current_date]
+            input_filtered_df.reset_index(inplace=True)
 
-                    input_filtered_df = input_df.loc[input_df['review_date'] < initial_date]
-                    input_filtered_df.reset_index(inplace=True)
-                    current_date = initial_date
-                    current_year, current_month = initial_year, initial_month
+            while not input_filtered_df.empty:
+                data_in_this_month = get_product_data(product, input_filtered_df)
 
-                    while not input_filtered_df.empty:
-                        data_in_this_month = get_product_data(product, input_filtered_df)
+                for index in range(0, len(input_filtered_df)):
+                    product_id = input_filtered_df.loc[index, 'product_id']
+                    column_star_rating = '%d_%d_star_rating' % (current_year, current_month)
+                    column_eval_score = '%d_%d_eval_score' % (current_year, current_month)
+                    output_df.at[output_df['product_id'] == product_id, column_star_rating] = \
+                        data_in_this_month.get(product_id)[0]
+                    output_df.at[output_df['product_id'] == product_id, column_eval_score] = \
+                        data_in_this_month.get(product_id)[1]
 
-                        for index in range(0, len(input_filtered_df)):
-                            product_id = input_filtered_df.loc[index, 'product_id']
-                            column_star_rating = '%d_%d_star_rating' % (current_year, current_month)
-                            column_eval_score = '%d_%d_eval_score' % (current_year, current_month)
-                            output_df.at[output_df['product_id'] == product_id, column_star_rating] = \
-                                data_in_this_month.get(product_id)[0]
-                            output_df.at[output_df['product_id'] == product_id, column_eval_score] = \
-                                data_in_this_month.get(product_id)[1]
+                print('---- %s %s Done ----' % (current_year, current_month))
 
-                        if current_month == 1:
-                            current_year -= 1
-                            current_date = current_date + relativedelta(years=-1, month=12, day=31)
-                        else:
-                            current_date = current_date + relativedelta(months=-1, day=31)
-                        current_month = current_month - 1 if current_month > 1 else 12
+                if current_month == 1:
+                    current_year -= 1
+                    current_date = current_date + relativedelta(years=-1, month=12, day=31)
+                else:
+                    current_date = current_date + relativedelta(months=-1, day=31)
+                current_month = current_month - 1 if current_month > 1 else 12
 
-                        input_filtered_df = input_df.loc[(input_df['review_date'] < current_date)]
-                        input_filtered_df.reset_index(inplace=True)
+                input_filtered_df = input_df.loc[(input_df['review_date'] < current_date)]
+                input_filtered_df.reset_index(inplace=True)
 
-                    print('---- %s%s%s Done ----' % (product, year, month))
-                    output_df.to_csv('Time/Output/%s%s%s.csv' % (product, year, month))
+            print('-------- %s%s%s Done --------' % (product, year, month))
+
+            output_df.to_csv('Time/Output2/%s%s%s.csv' % (product, year, month))
 
     reorganized_all()
     reorganized_month()
