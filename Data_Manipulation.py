@@ -49,7 +49,7 @@ def data_manipulate():
             min_vote_ratio_helpful_product_total = np.min(dataframe['vote_ratio_helpful_product_total'])
             vote_ratio_helpful_product_total = dataframe.loc[index, 'vote_ratio_helpful_product_total']
             normalized_vote_ratio_helpful_product_total = (
-                                                                      vote_ratio_helpful_product_total - min_vote_ratio_helpful_product_total) / (
+                                                                  vote_ratio_helpful_product_total - min_vote_ratio_helpful_product_total) / (
                                                                   max_vote_ratio_helpful_product_total - min_vote_ratio_helpful_product_total)
             dataframe.at[
                 index, 'normalized_vote_ratio_helpful_product_total'] = normalized_vote_ratio_helpful_product_total / 3 - 1 / 6
@@ -79,7 +79,10 @@ def data_manipulate():
             statistics.update({'pacifier': stats})
 
     def generate_evaluation_score(dataframe):
+        product_evaluation_score = {}
+
         for index in range(len(dataframe.index)):
+            product_id = dataframe.loc[index, 'product_id']
             I1 = dataframe.loc[index, 'normalized_keyword_count']
             I2 = dataframe.loc[index, 'normalized_vote_ratio_total_product_total']
             L = dataframe.loc[index, 'normalized_review_type']
@@ -88,7 +91,19 @@ def data_manipulate():
             H = dataframe.loc[index, 'normalized_vote_ratio_helpful_product_total']
             P = dataframe.loc[index, 'normalized_page_number']
             evaluation_score = I1 + I2 + L + A + V + H + P
-            dataframe.at[index, 'evaluation_score'] = evaluation_score if evaluation_score > 0 else 0
+            evaluation_score = evaluation_score if evaluation_score > 0 else 0
+            dataframe.at[index, 'evaluation_score'] = evaluation_score
+
+            if product_id not in product_evaluation_score:
+                product_evaluation_score.update({product_id: evaluation_score})
+            else:
+                product_evaluation_score.update(
+                    {product_id: product_evaluation_score.get(product_id) + evaluation_score})
+
+        for index in range(len(dataframe.index)):
+            product_id = dataframe.loc[index, 'product_id']
+            dataframe.at[index, 'product_avg_evaluation_score'] = product_evaluation_score.get(product_id) / \
+                                                                  dataframe.loc[index, 'review_count']
 
     for df in df_all:
         generate_statistics(df)
