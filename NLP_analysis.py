@@ -32,3 +32,7 @@ def nlp():
     hair_dryer_df.to_csv(open('Processed/NLP_Processed/hair_dryer_NLP_processed.tsv', 'w'), index=False)
     microwave_df.to_csv(open('Processed/NLP_Processed/microwave_NLP_processed.tsv', 'w'), index=False)
     pacifier_df.to_csv(open('Processed/NLP_Processed/pacifier_NLP_processed.tsv', 'w'), index=False)
+
+
+if __name__ == '__main__':
+    nlp()
