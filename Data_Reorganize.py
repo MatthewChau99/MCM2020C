@@ -156,7 +156,7 @@ def data_reorganize():
             star_df.to_csv(open('Time/Output/Star/%s_star.csv' % product, 'w'), index=True)
             eval_df.to_csv(open('Time/Output/Eval/%s_eval.csv' % product, 'w'), index=True)
 
-    def reorganized_month_with_dup():
+    def reorganized_eval_date():
         for product in products_abrev:
             eval_df = pd.read_csv('Time/Output/Eval/%s_eval.csv' % product, sep=',')
             output_df = pd.DataFrame(columns=['product_id', 'eval_score', 'date', 'normalized_date'])
@@ -175,8 +175,27 @@ def data_reorganize():
 
             output_df.to_csv(open('Time/Output/Eval/%s_eval_date.csv' % product, 'w'), index=True)
 
+    def reorganized_star_date():
+        for product in products_abrev:
+            star_df = pd.read_csv('Time/Output/Star/%s_star.csv' % product, sep=',')
+            output_df = pd.DataFrame(columns=['product_id', 'star_rating', 'date', 'normalized_date'])
+
+            for index in range(len(star_df.index)):
+                product_id = star_df.loc[index, 'product_id']
+                for date_index in range(2, len(star_df.columns)):
+                    star_rating = star_df.loc[index, star_df.columns[date_index]]
+                    if not pd.isna(star_rating):
+                        date = star_df.columns[date_index]
+                        date = date[0:len(date) - 11]
+                        year, month = int(date.split('_')[0]), int(date.split('_')[1])
+                        normalized_date = 12 * (year - 2012) + month - 1
+                        add_dict = {'product_id': product_id, 'star_rating': star_rating, 'date': date, 'normalized_date': normalized_date}
+                        output_df = output_df.append(add_dict, ignore_index=True)
+
+            output_df.to_csv(open('Time/Output/Star/%s_star_date.csv' % product, 'w'), index=True)
     # reorganized_month_separate()
-    reorganized_month_with_dup()
+    # reorganized_eval_date()
+    reorganized_star_date()
 
 
 if __name__ == '__main__':
