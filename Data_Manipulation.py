@@ -112,7 +112,12 @@ def data_manipulate():
             dataframe.at[index, 'product_evaluation_score'] = product_evaluation_score.get(product_id) / \
                                                               dataframe.loc[index, 'review_count']
 
-        # for index in range(len(dataframe.index)):
+        for index in range(len(dataframe.index)):
+            eval_max = np.max(dataframe['product_evaluation_score'])
+            eval_min = np.min(dataframe['product_evaluation_score'])
+            eval = dataframe.loc[index, 'product_evaluation_score']
+            dataframe.at[index, 'normalized_product_evaluation_score'] = ((eval - eval_min) * 4 / (
+                        eval_max - eval_min)) + 1
 
     for df in df_all:
         generate_statistics(df)

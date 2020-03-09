@@ -19,7 +19,7 @@ def data_reorganize():
             for index2 in range(len(df_all[index1])):
                 product_id = df_all[index1].loc[index2, 'product_id']
                 avg_rating = df_all[index1].loc[index2, 'product_average_rating']
-                evaluation_score = df_all[index1].loc[index2, 'product_evaluation_score']
+                evaluation_score = df_all[index1].loc[index2, 'normalized_product_evaluation_score']
                 product_type = data_filename_all[index1]
                 data_all[index1].append([product_id, avg_rating, evaluation_score, product_type])
 
@@ -34,3 +34,7 @@ def data_reorganize():
 
     # def reorganized_month():
     reorganized_all()
+
+
+if __name__ == '__main__':
+    data_reorganize()
