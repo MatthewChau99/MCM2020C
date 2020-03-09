@@ -11,7 +11,7 @@ def data_reorganize():
     hair_dryer_df = pd.read_csv('Processed/Stats_Processed/hair_dryer_stats_processed.tsv', sep=',')
     microwave_df = pd.read_csv('Processed/Stats_Processed/microwave_stats_processed.tsv', sep=',')
     pacifier_df = pd.read_csv('Processed/Stats_Processed/pacifier_stats_processed.tsv', sep=',')
-    df_all = [hair_dryer_df, microwave_df, pacifier_df]
+    df_all = [pacifier_df]
 
     def reorganized_all():
         hair_data = []
@@ -39,8 +39,8 @@ def data_reorganize():
         output_df.to_csv(open('Processed/Reorganized/output_reorganized.csv', 'w'), index=False)
 
     def reorganized_month():
-        products_abrev = ['h', 'm', 'p']
-        years = ['2012', '2013', '2014', '2015']
+        products_abrev = ['p']
+        years = ['2015']
         months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 
         def get_product_data(df_name, df):
@@ -122,7 +122,7 @@ def data_reorganize():
                     print('---- %s%s%s Done ----' % (product, year, month))
                     output_df.to_csv('Time/Output/%s%s%s.csv' % (product, year, month))
 
-    reorganized_all()
+    # reorganized_all()
     reorganized_month()
 
 
