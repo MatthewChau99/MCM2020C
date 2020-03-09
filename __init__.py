@@ -3,6 +3,7 @@ import NLP_analysis as nlp
 import Data_Manipulation as dm
 import Data_Reorganize as dr
 import pandas as pd
+import numpy as np
 
 if __name__ == '__main__':
     dp.data_preprocess()
@@ -13,4 +14,6 @@ if __name__ == '__main__':
     print('------------ Data Calculated ------------')
     dr.data_reorganize()
     print('------------ Data Reorganized ------------')
-    df = pd.read_csv('Processed/Stats_Processed/pacifier_stats_processed.tsv', sep=',')
+    df = pd.read_csv('Processed/Reorganized/output_reorganized.csv')
+    print(np.max(df['evaluation_score']))
+    print(np.min(df['evaluation_score']))
