@@ -159,7 +159,7 @@ def data_reorganize():
     def reorganized_month_with_dup():
         for product in products_abrev:
             eval_df = pd.read_csv('Time/Output/Eval/%s_eval.csv' % product, sep=',')
-            output_df = pd.DataFrame(columns=['product_id', 'eval_score', 'date'])
+            output_df = pd.DataFrame(columns=['product_id', 'eval_score', 'date', 'normalized_date'])
 
             for index in range(len(eval_df.index)):
                 product_id = eval_df.loc[index, 'product_id']
@@ -167,7 +167,10 @@ def data_reorganize():
                     eval_score = eval_df.loc[index, eval_df.columns[date_index]]
                     if not pd.isna(eval_score):
                         date = eval_df.columns[date_index]
-                        add_dict = {'product_id': product_id, 'eval_score': eval_score, 'date': date[0:len(date) - 11]}
+                        date = date[0:len(date) - 11]
+                        year, month = int(date.split('_')[0]), int(date.split('_')[1])
+                        normalized_date = 12 * (year - 2012) + month - 1
+                        add_dict = {'product_id': product_id, 'eval_score': eval_score, 'date': date, 'normalized_date': normalized_date}
                         output_df = output_df.append(add_dict, ignore_index=True)
 
             output_df.to_csv(open('Time/Output/Eval/%s_eval_date.csv' % product, 'w'), index=True)
