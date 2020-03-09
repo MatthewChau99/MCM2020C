@@ -18,9 +18,9 @@ def nlp():
             # Generate sentiment score
             polarity_scores_body = sid.polarity_scores(review_body)
             polarity_scores_head = sid.polarity_scores(review_headline)
-            dataframe.at[index, 'sentiment_pos'] = polarity_scores_body['pos'] * 0.2 + polarity_scores_head['pos'] * 0.8
-            dataframe.at[index, 'sentiment_neu'] = polarity_scores_body['neu'] * 0.2 + polarity_scores_head['neu'] * 0.8
-            dataframe.at[index, 'sentiment_neg'] = polarity_scores_body['neg'] * 0.2 + polarity_scores_head['neg'] * 0.8
+            # dataframe.at[index, 'sentiment_pos'] = polarity_scores_body['pos'] * 0.2 + polarity_scores_head['pos'] * 0.8
+            # dataframe.at[index, 'sentiment_neu'] = polarity_scores_body['neu'] * 0.2 + polarity_scores_head['neu'] * 0.8
+            # dataframe.at[index, 'sentiment_neg'] = polarity_scores_body['neg'] * 0.2 + polarity_scores_head['neg'] * 0.8
             dataframe.at[index, 'sentiment_compound'] = polarity_scores_body['compound'] * 0.2 + polarity_scores_head[
                 'compound'] * 0.8
 

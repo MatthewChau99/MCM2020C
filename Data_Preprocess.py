@@ -63,21 +63,20 @@ def data_preprocess():
                   value=0.0)  # Adding product avg evaluation score
         df.insert(loc=len(df.columns), column='normalized_product_evaluation_score',
                   value=0.0)  # Adding product avg evaluation score
-        df.insert(loc=2, column='review_weight', value=0)  # Adding review weight (for each review for the same prod)
-        df.insert(loc=4, column='review_count', value=0)  # Adding review count for each product
-        df.insert(loc=5, column='product_count', value=0)  # Adding product count column
-        df.insert(loc=8, column='product_average_rating', value=0.0)  # Adding product average rating column
-        df.insert(loc=11, column='product_vote_count', value=0)  # Adding vote count product
-        df.insert(loc=12, column='normalized_product_vote_count', value=0.0)  # Adding normalized vote ratio product
-        df.insert(loc=13, column='vote_ratio_helpful_product_total',
+        df.insert(loc=3, column='review_count', value=0)  # Adding review count for each product
+        df.insert(loc=4, column='product_count', value=0)  # Adding product count column
+        df.insert(loc=7, column='product_average_rating', value=0.0)  # Adding product average rating column
+        df.insert(loc=10, column='product_vote_count', value=0)  # Adding vote count product
+        df.insert(loc=11, column='normalized_product_vote_count', value=0.0)  # Adding normalized vote ratio product
+        df.insert(loc=12, column='vote_ratio_helpful_product_total',
                   value=0.0)  # Review helpful vote / Product total vote
-        df.insert(loc=14, column='normalized_vote_ratio_helpful_product_total',
+        df.insert(loc=13, column='normalized_vote_ratio_helpful_product_total',
                   value=0.0)  # Review helpful vote / Product total vote
-        df.insert(loc=15, column='vote_ratio_total_product_total', value=0.0)  # Adding vote ratio all
-        df.insert(loc=16, column='normalized_vote_ratio_total_product_total',
+        df.insert(loc=14, column='vote_ratio_total_product_total', value=0.0)  # Adding vote ratio all
+        df.insert(loc=15, column='normalized_vote_ratio_total_product_total',
                   value=0.0)  # Adding normalized vote ratio all
-        df.insert(loc=17, column='normalized_vine', value=0.0)  # Adding normalized vote ratio all
-        df.insert(loc=19, column='normalized_verified_purchase', value=0.0)  # Adding normalized vote ratio all
+        df.insert(loc=16, column='normalized_vine', value=0.0)  # Adding normalized vote ratio all
+        df.insert(loc=18, column='normalized_verified_purchase', value=0.0)  # Adding normalized vote ratio all
 
     #
     #  Generating new attributes

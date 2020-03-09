@@ -13,7 +13,9 @@ if __name__ == '__main__':
     # print('------------ Data Calculated ------------')
     # dr.data_reorganize()
     # print('------------ Data Reorganized ------------')
-    df = pd.read_csv('Processed/Stats_Processed/pacifier_stats_processed.tsv')
-    df['review_date'] = pd.to_datetime(df['review_date'])
-    print(df['review_date'][0].year)
+    df = pd.read_csv('Time/Output/Eval/h_eval.csv', sep=',')
+    for i in range(len(df.loc[0])):
+        print(df.loc[0][i].)
+
+
 
