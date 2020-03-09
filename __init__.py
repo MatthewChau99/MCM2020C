@@ -13,4 +13,5 @@ if __name__ == '__main__':
     print('------------ Data Calculated ------------')
     dr.data_reorganize()
     print('------------ Data Reorganized ------------')
-    df = pd.read_csv('Processed/Stats_Processed/pacifier_stats_processed.tsv', sep=',')
+    df = pd.read_csv('Processed/Reorganized/output_reorganized.csv')
+

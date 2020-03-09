@@ -57,8 +57,12 @@ def data_preprocess():
         df.insert(loc=len(df.columns), column='word_count', value=0)  # Adding wordcount column
         df.insert(loc=len(df.columns), column='review_type', value=0)  # Adding review type column
         df.insert(loc=len(df.columns), column='normalized_review_type', value=0.0)  # Adding page number column
-        df.insert(loc=len(df.columns), column='evaluation_score', value=0.0)  # Adding final evaluation score
-        df.insert(loc=len(df.columns), column='product_avg_evaluation_score', value=0.0) # Adding product avg evaluation score
+        df.insert(loc=len(df.columns), column='sentiment_weight', value=0.0)  # Adding final evaluation score
+        df.insert(loc=len(df.columns), column='review_evaluation_score', value=0.0)  # Adding review evaluation score
+        df.insert(loc=len(df.columns), column='product_evaluation_score',
+                  value=0.0)  # Adding product avg evaluation score
+        df.insert(loc=len(df.columns), column='normalized_product_evaluation_score',
+                  value=0.0)  # Adding product avg evaluation score
         df.insert(loc=2, column='review_weight', value=0)  # Adding review weight (for each review for the same prod)
         df.insert(loc=4, column='review_count', value=0)  # Adding review count for each product
         df.insert(loc=5, column='product_count', value=0)  # Adding product count column
