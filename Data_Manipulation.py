@@ -131,6 +131,9 @@ def data_manipulate():
     microwave_df.to_csv(open('Processed/Stats_Processed/microwave_stats_processed.tsv', 'w'), index=False)
     pacifier_df.to_csv(open('Processed/Stats_Processed/pacifier_stats_processed.tsv', 'w'), index=False)
 
+    hair_dryer_df.to_csv(open('Processed/Stats_Processed/hair_dryer_stats_processed.csv', 'w'), index=False)
+    microwave_df.to_csv(open('Processed/Stats_Processed/microwave_stats_processed.csv', 'w'), index=False)
+    pacifier_df.to_csv(open('Processed/Stats_Processed/pacifier_stats_processed.csv', 'w'), index=False)
 
 if __name__ == '__main__':
     data_manipulate()

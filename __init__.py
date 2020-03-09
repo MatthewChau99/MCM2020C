@@ -5,13 +5,15 @@ import Data_Reorganize as dr
 import pandas as pd
 
 if __name__ == '__main__':
-    dp.data_preprocess()
-    print('------------ Data Preprocessed ------------')
-    nlp.nlp()
-    print('--------- Data Sentiment Calculated ---------')
-    dm.data_manipulate()
-    print('------------ Data Calculated ------------')
-    dr.data_reorganize()
-    print('------------ Data Reorganized ------------')
-    df = pd.read_csv('Processed/Reorganized/output_reorganized.csv')
+    # dp.data_preprocess()
+    # print('------------ Data Preprocessed ------------')
+    # nlp.nlp()
+    # print('--------- Data Sentiment Calculated ---------')
+    # dm.data_manipulate()
+    # print('------------ Data Calculated ------------')
+    # dr.data_reorganize()
+    # print('------------ Data Reorganized ------------')
+    df = pd.read_csv('Processed/Stats_Processed/pacifier_stats_processed.tsv')
+    df['review_date'] = pd.to_datetime(df['review_date'])
+    print(df['review_date'][0].year)
 
